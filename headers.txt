@@ -1,0 +1,10 @@
+HTTP/1.1 100 Continue
+
+HTTP/1.1 400 Bad Request
+Date: Wed, 16 Oct 2013 20:41:57 GMT
+Server: Apache/2.2.11 (Unix) DAV/2 PHP/5.3.8 SVN/1.6.5 Phusion_Passenger/2.2.5
+X-Powered-By: PHP/5.3.8
+Content-Length: 21
+Connection: close
+Content-Type: text/xml
+

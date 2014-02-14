@@ -1,0 +1,13 @@
+*.swp
+*.pyc
+*.pyx
+*.pyo
+*~
+build/
+dist/
+*.egg-info/
+doc/build/*
+.idea/
+__MACOSX
+static/media/
+local_settings.py

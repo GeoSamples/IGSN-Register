@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SESAR Mobile Home - Settings</title>
+    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.1.1.css" />
+    <link rel="stylesheet" href="css/validation.css" />
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/jquery.mobile-1.1.1.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/jquery.json-2.3.min.js"></script>
+    <script src="js/site.js"></script>
+    <script>
+        $(function () {
+
+            var settings = localStorage.getObj('settings');
+            if (settings == null)
+                settings = {};
+
+            $(':input[name="username"]').val(settings["username"]);
+
+            $(document).on('click', '.settings-save', function (e) {
+                e.preventDefault();
+
+                settings["username"] = $(':input[name="username"]').val();
+                localStorage.setObj('settings', settings);
+
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <div data-role="page" data-theme="a" data-add-back-btn="true">
+        <div data-role="header" data-position="fixed">
+            <a href="#" data-icon="arrow-l" data-rel="back">Back</a>
+            <h3>Settings
+            </h3>
+        </div>
+        <div data-role="content">
+            <div data-role="fieldcontain">
+                <label for="username">
+                    Username: 
+                </label>
+                <input name="username" id="username" type="text" />
+            </div>
+        </div>
+        <div data-role="footer" data-position="fixed">
+            <a href="#" class="settings-save" data-role="button" data-icon="save">Save</a>
+        </div>
+    </div>
+</body>
+</html>
