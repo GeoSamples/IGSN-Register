@@ -1,0 +1,223 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SESAR Mobile Home</title>
+    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.1.1.css" />
+    <link rel="stylesheet" href="css/validation.css" />
+    <link rel="stylesheet" href="css/themes/default/site.css" />
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/jquery.mobile-1.1.1.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/jquery.json-2.3.min.js"></script>
+    <script src="js/site.js"></script>
+    <script>
+        $(function () {
+
+            $("form").validate({
+                submitHandler: function (form) {
+                    var sampleItem = { Time: new Date() };
+                    $.each($(':input[data-storage-key]', form), function (index, value) {
+                        sampleItem[$(value).attr('data-storage-key')] = $(value).val();
+                    });
+
+                    //localStorage.clear();
+                    var samples = localStorage.getObj('samples');
+                    if (samples == null) {
+                        samples = [];
+                    }
+
+                    samples.push(sampleItem);
+
+                    localStorage.setObj('samples', samples);
+
+                    var result = $(form).serializeArray();
+
+                    $.post('/sesar_mobile/ingest/', $(form).serialize(), function(data, status, xhr) {
+                        console.log(data);
+                    });
+                }
+            });
+
+            //  Build labels
+            var labels = {};
+            $.each($('label[for]'), function (index, value) {
+                var value = $(this).attr('for');
+                var name = $(this).html();
+                labels[value] = name;
+            });
+            localStorage.setObj('labels', labels);
+        });
+    </script>
+
+</head>
+<body>
+    <div data-role="page">
+        <div data-role="header" data-position="fixed">
+            <h1>Sesar Mobile</h1>
+        </div>
+        <div data-role="content">
+            <form>
+                <div data-role="fieldcontain">
+                    <label for="sample_type">
+                        Sample type:
+                    </label>
+                    <select name="sample_type" id="sample_type" data-storage-key="sample_type">
+                        <option>Core</option>
+                        <option>Core Half Round</option>
+                        <option>Core Piece</option>
+                        <option>Core Quarter Round</option>
+                        <option>Core Section</option>
+                        <option>Core Section Half</option>
+                        <option>Core Sub-Piece</option>
+                        <option>Core Whole Round</option>
+                        <option>CTD (Conductivity, Temperature, and Depth)</option>
+                        <option>Cuttings</option>
+                        <option>Dredge</option>
+                        <option>Grab</option>
+                        <option>Hole</option>
+                        <option>Individual Sample</option>
+                        <option>Oriented Core</option>
+                        <option>Other</option>
+                        <option>Rock Powder</option>
+                        <option>Terrestrial Section</option>
+                    </select>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="parent_igsn">
+                        Parent IGSN:
+                    </label>
+                    <input name="parent_igsn" id="parent_igsn" type="text" data-storage-key="parent_igsn" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="user_code">
+                        User Code:
+                    </label>
+                    <input name="user_code" id="user_code" type="text" data-storage-key="user_code" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="collector">Collector</label>
+                    <input name="collector" id="collector" type="text" data-storage-key='collector'>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="name">
+                        Sample Name:
+                    </label>
+                    <input name="name" id="name" type="text" data-storage-key="name" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="is_private">
+                        Private:
+                    </label>
+                    <select name="is_private" id="is_private" data-role="slider" data-storage-key="is_private">
+                        <option value="off">Off</option>
+                        <option value="on">On</option>
+                    </select>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="material">
+                        Materials:
+                    </label>
+                    <select name="material" id="material" data-storage-key="material">
+                        <option>Biology</option>
+                        <option>Gas</option>
+                        <option>Liquid>aqueous</option>
+                        <option>Liquid>organic</option>
+                        <option>Mineral</option>
+                        <option>Not applicable</option>
+                        <option>Other</option>
+                        <option>Particulate</option>
+                        <option>Rock</option>
+                        <option>Sediment</option>
+                        <option>Soil</option>
+                    </select>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="collection_method">
+                        Collection Method:
+                    </label>
+                    <select name="collection_method" id="collection_method" data-storage-key="collection_method">
+                        <option>Blasting</option>
+                        <option>Camera SledCamera tow</option>
+                        <option>Coring</option>
+                        <option>Coring>BoxCorer</option>
+                        <option>Coring>CameraMounted</option>
+                        <option>CorerCoring>DrillCorer</option>
+                        <option>Coring>FreeFallCorer</option>
+                        <option>Coring>GravityCorer</option>
+                        <option>Coring>GravityCorer>Giant</option>
+                        <option>Coring>GravityCorer>Pilot</option>
+                        <option>Coring>HandHeldCorer</option>
+                        <option>Coring>KastenlotCorer</option>
+                        <option>Coring>MultiCorer</option>
+                        <option>Coring>PistonCorer</option>
+                        <option>Coring>PistonCorer>Giant</option>
+                        <option>Coring>RockCorer</option>
+                        <option>Coring>SideSaddleCorer</option>
+                        <option>Coring>SubmersibleMountedCorer</option>
+                        <option>Coring>TriggerWeightCorer</option>
+                        <option>Coring>VibratingCorer</option>
+                        <option>Dredging</option>
+                        <option>Dredging>Chain Bag</option>
+                        <option>Dredging>ChainBagDredge</option>
+                        <option>Grab</option>
+                        <option>Grab>HOV</option>
+                        <option>Grab>ROV</option>
+                        <option>Manual</option>
+                        <option>Probe</option>
+                        <option>Sediment trap</option>
+                        <option>Suspended sediment</option>
+                        <option>Unknown</option>
+                    </select>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="latitude">
+                        Latitude:
+                    </label>
+                    <input name="latitude" id="latitude" type="number" data-storage-key="latitude" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="longitude">
+                        Longitude:
+                    </label>
+                    <input name="longitude" id="longitude" type="number" data-storage-key="longitude" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="elevation">
+                        Elevation:
+                    </label>
+                    <input name="elevation" id="elevation" type="number" data-storage-key="elevation" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="primary_location_name">
+                        Location Name:
+                    </label>
+                    <input name="primary_location_name" id="primary_location_name" type="text" data-storage-key="primary_location_name" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="locality">
+                        Locality:
+                    </label>
+                    <input name="locality" id="locality" type="text" data-storage-key="locality" />
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="field_name">Field name:</label>
+                    <input id="field_name" name="field_name" data-storage-key="field_name" type="text">
+                </div>
+                <div data-role="fieldname">
+                    <label for="description">Description:</label>
+                    <textarea name="description" id="description"></textarea>
+                </div>
+                <div data-role="content" style="padding: 15px">
+                    <input value="Submit" type="submit" data-role="button" />
+                </div>
+            </form>
+            <div data-role="footer" data-position="fixed">
+                <a href="Samples.html" rel="external" data-role="button" data-icon="info">Samples</a>
+                <a href="Settings.html" rel="external" class="ui-btn-right" data-role="button" data-icon="gear">Settings</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

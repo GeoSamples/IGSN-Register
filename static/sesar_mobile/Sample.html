@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SESAR Mobile Home - Samples</title>
+    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.1.1.css" />
+    <link rel="stylesheet" href="css/validation.css" />
+    <link rel="stylesheet" href="css/themes/default/site.css" />
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/jquery.mobile-1.1.1.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/jquery.json-2.3.min.js"></script>
+    <script src="js/site.js"></script>
+    <script>
+        $(function () {
+            var sampleID = getURLParameter('id');
+
+            var samples = localStorage.getObj('samples');
+            var sample = samples[sampleID];
+
+            var labels = localStorage.getObj('labels');
+
+            $('#sampleHeader').html(sample.Time + ' : ' + sample.name);
+
+            var container = $('#sampleContent table tbody');
+            container.empty();
+            for (var i in sample) {
+                var label = labels[i];
+                if (label == undefined)
+                    label = i;
+                container.append('<tr><th>' + label + '</th><td>' + sample[i] + '</td></tr>');
+            }
+        });
+    </script>
+
+</head>
+<body>
+    <div data-role="page" data-theme="a">
+        <div data-role="header" data-position="fixed">
+            <a href="#" data-icon="arrow-l" data-rel="back">Back</a>
+            <h3 id="sampleHeader">Sample</h3>
+        </div>
+        <div id="sampleContent">
+            <table>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

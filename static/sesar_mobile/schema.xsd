@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="sample">
+    <xs:complexType>
+      <xs:sequence>
+        <!--controlled list, ‘individual sample’ as default-->
+        <xs:element ref="sample_type"/>
+        <!--user can provide it, system will need to ensure uniqueness-->
+        <xs:element ref="igsn"/>
+        <!--should be in ‘settings’-->
+        <xs:element ref="user_code"/>
+        <!-- user enters for each registration-->
+        <xs:element ref="name"/>
+        <xs:element ref="sample_other_name"/>
+        <!--??-->
+        <xs:element ref="parent_igsn"/>
+        <xs:element ref="parent_sample_type"/>
+        <xs:element ref="parent_name"/>
+        <xs:element ref="is_private"/>
+        <xs:element ref="publish_date"/>
+        <!--select from controlled list-->
+        <xs:element ref="material"/>
+        <xs:element ref="classification"/>
+        <!--optional to enter-->
+        <xs:element ref="field_name"/>
+        <!--optional to enter-->
+        <xs:element ref="description"/>
+        <xs:element ref="age_min"/>
+        <xs:element ref="age_max"/>
+        <xs:element ref="age_unit"/>
+        <xs:element ref="geological_age"/>
+        <xs:element ref="geological_unit"/>
+        <!--?? – controlled list-->
+        <xs:element ref="collection_method"/>
+        <xs:element ref="collection_method_descr"/>
+        <xs:element ref="size"/>
+        <xs:element ref="size_unit"/>
+        <xs:element ref="sample_comment"/>
+        <xs:element ref="latitude"/>
+        <xs:element ref="longitude"/>
+        <xs:element ref="latitude_end"/>
+        <xs:element ref="longitude_end"/>
+        <xs:element ref="elevation"/>
+        <xs:element ref="elevation_end"/>
+        <xs:element ref="primary_location_type"/>
+        <xs:element ref="primary_location_name"/>
+        <xs:element ref="location_description"/>
+        <xs:element ref="locality"/>
+        <xs:element ref="locality_description"/>
+        <xs:element ref="country"/>
+        <xs:element ref="province"/>
+        <xs:element ref="county"/>
+        <xs:element ref="city"/>
+        <xs:element ref="cruise_field_prgrm"/>
+        <xs:element ref="platform_type"/>
+        <xs:element ref="platform_name"/>
+        <xs:element ref="platform_descr"/>
+        <!--default from setting-->
+        <xs:element ref="collector"/>
+        <xs:element ref="collector_detail"/>
+        <!--obviously, the collection_date is missing from the schema-->
+        <xs:element ref="collection_date_precision"/>
+        <xs:element ref="current_archive"/>
+        <xs:element ref="current_archive_contact"/>
+        <xs:element ref="original_archive"/>
+        <xs:element ref="original_archive_contact"/>
+        <xs:element ref="depth_min"/>
+        <xs:element ref="depth_max"/>
+        <xs:element ref="depth_scale"/>
+        <xs:element maxOccurs="unbounded" ref="other_names"/>
+        <xs:element maxOccurs="unbounded" ref="urls"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="sample_type">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="igsn" type="xs:NCName"/>
+  <xs:element name="user_code" type="xs:NCName"/>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="sample_other_name" type="xs:string"/>
+  <xs:element name="parent_igsn" type="xs:NCName"/>
+  <xs:element name="parent_sample_type" type="xs:NCName"/>
+  <xs:element name="parent_name" type="xs:string"/>
+  <xs:element name="is_private">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="publish_date" type="xs:string"/>
+  <xs:element name="material" type="xs:NCName"/>
+  <xs:element name="classification" type="xs:string"/>
+  <xs:element name="field_name" type="xs:string"/>
+  <xs:element name="description" type="xs:string"/>
+  <xs:element name="age_min" type="xs:decimal"/>
+  <xs:element name="age_max" type="xs:decimal"/>
+  <xs:element name="age_unit">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="geological_age" type="xs:decimal"/>
+  <xs:element name="geological_unit">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="collection_method">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="collection_method_descr">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="size" type="xs:decimal"/>
+  <xs:element name="size_unit">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="sample_comment">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="latitude" type="xs:decimal"/>
+  <xs:element name="longitude" type="xs:decimal"/>
+  <xs:element name="latitude_end" type="xs:decimal"/>
+  <xs:element name="longitude_end" type="xs:decimal"/>
+  <xs:element name="elevation" type="xs:decimal"/>
+  <xs:element name="elevation_end" type="xs:decimal"/>
+  <xs:element name="primary_location_type">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="primary_location_name">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="location_description">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="locality">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="locality_description">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="country" type="xs:string"/>
+  <xs:element name="province" type="xs:string"/>
+  <xs:element name="county" type="xs:string"/>
+  <xs:element name="city" type="xs:string"/>
+  <xs:element name="cruise_field_prgrm" type="xs:string"/>
+  <xs:element name="platform_type" type="xs:string"/>
+  <xs:element name="platform_name" type="xs:string"/>
+  <xs:element name="platform_descr" type="xs:string"/>
+  <xs:element name="collector" type="xs:string"/>
+  <xs:element name="collector_detail" type="xs:string"/>
+  <xs:element name="collection_date_precision">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="current_archive">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="current_archive_contact">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="original_archive">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="original_archive_contact">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="depth_min" type="xs:decimal"/>
+  <xs:element name="depth_max" type="xs:decimal"/>
+  <xs:element name="depth_scale">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="other_names" type="xs:string"/>
+  <xs:element name="urls" type="xs:anyURI"/>
+</xs:schema>
+
