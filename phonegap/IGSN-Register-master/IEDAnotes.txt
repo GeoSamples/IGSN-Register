@@ -1,0 +1,159 @@
+Looked at various options for development, chiefly native app in Objective-C versus Phonegap—decided on Phonegap which Lulin agreed with.
+1)Javascript is slower, but the app shouldn’t require a lot of memory or be doing any heavy image processing.
+2) Keeping it platform agnostic will save the time needed to develop a secondary android app.
+
+
+Lots of problems getting the environment working: had to update system to 10.10.5, download latest version of Xcode. Currently working around only being able to access phonegap commands through “sudo”.
+
+Trying to set up a git environment - Lulin has a repository already set up on github with the previous work (most of which will have to be trashed except perhaps for the basic interface), but phonegap creates a local repository so I’m trying to figure out how to merge the two. I have git init’ed my local repo, Desktop/IGSN-Register. adding a .gitignore file, using advice found here: http://stackoverflow.com/questions/17911204/gitignore-for-phonegap-cordova-3-0-projects-what-should-i-commit Basically leaving out all platform files and plugin files — DixonJ notes this will lead to some problems later although I’m not quite clear on what.
+
+Finally worked by deciding to just open a new repo belonging to me called IGSN-Register. git push -u  origin master gave me this result:
+Counting objects: 91, done.
+Delta compression using up to 2 threads.
+Compressing objects: 100% (75/75), done.
+Writing objects: 100% (91/91), 1.16 MiB | 0 bytes/s, done.
+Total 91 (delta 2), reused 0 (delta 0)
+To https://github.com/johnverghese/IGSN-Register.git
+ * [new branch]      master -> master
+error: could not lock config file .git/config: Permission denied
+error: could not lock config file .git/config: Permission denied
+Branch master set up to track remote branch master from origin.
+error: update_ref failed for ref 'refs/remotes/origin/master': cannot lock ref 'refs/remotes/origin/master': unable to create directory for .git/refs/remotes/origin/master
+Files are present on github, but not sure what these thrown errors mean.
+
+
+
+3/4 Trying to get the build working, but no luck, thrown an EACCES error.
+Error: EACCES: permission denied, open '/Users/JohnSchool/.config/configstore/update-notifier-cordova.json'
+You don't have access to this file.
+Recursively chown’ed through to change the .config permission to me from the root - something strange about node.js has it have all the files belong to the root instead of the installing user.
+
+4/1 Ported all of the old code into the project over the last couple of weeks. All of the pages work correctly when served on the localhost using “phonegap serve”, which is a small custom-built server. Been working through codecademy javascript/jquery exercises.
+
+The current problem to deal with is how to get the app to talk to the server for the login info. Currently the localhost throws an error: “CANNOT POST”. This of course makes sense because the localhost can’t itself talk to the SESAR servers on the backend — Lulin has me looking into Ajax and the REST API for SESAR.
+
+<script>
+        $(function () {
+            $("form").validate({
+                submitHandler: function(form) { form.submit(); }
+            });
+        });
+    </script>
+That’s the relevant code in the index.html file. There’s a script defined that acts on the DOM form object, and then calls a validate method that comes from the jquery validation plugin (link here: http://jqueryvalidation.org/validate/ ). That plugin also defines the submitHandler object. That API says that submitHandler is “the right place to submit a form via Ajax after it is validated”, with no additional explanation. Now according to Lulin the form is being submitted via Ajax to the SESAR authentication system, which is specified here: http://www.iedadata.org/services/sesar_api#2.sesarusercredential This API says that the request goes to app.geosamples.org/webservices/credentials_service_v2.php However, I’ve recursively grep’ed through both my ported code (in Desktop/IGSN-Register) and the original code (in JohnSchool/GeoSamples:IGSN-Register) and nowhere is that URL written. The only hit for “geosamples” is in index.bootstrap.html, where the about links to geosamples.org, the IEDA main page. So I’m not clear at all how the form input is actually making its way to the credential authenticator. {Just for the record: when you’re looking through the javascript files, the min.js versions are just minified versions of the regular .js files, i.e. w/ shorter variable names and comments and whitespace stripped out}.
+
+OK I think I get it. I’m still not sure where the request is originating, but here are the request headers from the POST, gotten with Firebug:
+Accept
+text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Encoding
+gzip, deflate
+Accept-Language
+en-US,en;q=0.5
+Connection
+keep-alive
+Cookie
+csrftoken=TWgh2lxad9PwkYyAMtdG8d0FV6sUCyrI
+DNT
+1
+Host
+ga.renci.org
+Referer
+http://ga.renci.org/sesar_mobile/
+User-Agent
+Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:45.0) Gecko/20100101 Firefox/45.0
+The server that it’s talking to is ga.renci.org, so it’s not using the SESAR API at all. It’s an nginx server and uses cookies. You still need to track down where the request is originating. 
+
+4/7 So it turns out the request originated in the line <form method=‘POST’> — if a site to post to isn’t specified, this automatically submits it to the page that includes the form. I simply changed the line to <form action="https://app.geosamples.org/webservices/credentials_service_v2.php" method='POST'>
+This page {https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Forms/Sending_and_retrieving_form_data} is what got me the info I needed. The new issue is that the page loads the entire response instead of just sending it to be authenticated, and then letting the user in.
+
+OK just going to go through and try to line by line understand what’s going on with the little script that’s given me so much trouble:
+<script> just opening the script. I think this will always get executed
+    $(function () {     this I think is left unnamed for no reason — when I add function validate the functionality doesn’t change
+        $(“form”).validate({ here the dollar sign changes form into a jQuery object, upon which validate gets called. validate is from the validate jQuery plugin, API is here: http://jqueryvalidation.org/validate/
+            submitHandler: function(form) {form.submit(): } submitHandler is a function that is an option for validate. check the API, doesn’t make a ton of sense to me. submitHandler is a function - I think the colon here works equivalently to an = sign.
+Changed the form.submit() call to form.ajaxSubmit(), no evident change in functionality. I also appended a return false; call after the suggestion of this page: http://malsup.com/jquery/form/#api which suggested that it would “prevent normal browser submit and page navigation”. No luck.
+
+So, after a bunch of fiddling, Lulin and I collectively decided to scrap the malsup library and write a standard Ajax jQuery request. Now I just have to learn to do that — so it goes.
+
+—add deviceReady event
+
+4/18
+So maybe it turns out that writing a standard Ajax jQuery request wasn’t all that hard? Here’s the script I wrote, mostly with help from https://developer.mozilla.org/en-US/docs/AJAX/Getting_Started and https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest on the Mozilla Developer Network:
+<script>
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+            
+            }
+        };
+        xhttp.open("POST", "https://app.geosamples.org/webservices/credentials_service_v2.php", true);
+        xhttp.send($("form"));
+</script>
+
+{Note 4/19 — this way works, but you have to add the $(document).ready(function() up top. I’ve since used the built-in jQuery post method instead.}
+
+Note that the behavior for when the response is read is as yet undefined. However, this iteration of index.html does return the response from the IEDA server saying that the username/password combination is valid. 
+Just now, though, I tried taking off the action/method tags from the <form> element and that makes the page no longer talk to the server at all. I think that may be because the XMLHttpRequest never gets bound to the submit function. {Just changed my vim setup by the way to indent only using spaces, 2 spaces per indent. This follows the google style guide for most languages}. 
+
+
+4/19 So one current problem is that using Firebug, the HTML tab no longer shows www/index.html. Instead, it shows a different page — my personally written script shows up is linked in the <head>, and all of the sections of the body are linked, but it’s wrapped in some kind of overlay that must be coming from Phonegap, I’m just not clear on where it’s coming from.
+
+The main problem is that I can’t get the submit handler to bind to the login button. Fixed! needed to add the $(document).ready(function(). Now I get a 401 Network Error unauthorized, which is the next issue to tackle.
+
+4/20 The page was also sending a default GET request in addition to the POST. Adding an event.stopPropagation() call in addition to the event.preventDefault() fixed this — note that neither one by itself is sufficient, not sure why.
+
+Here’s the main text of an email I just sent to Lulin:
+
+******************************************************************
+The POST request to https://app.geosamples.org/webservices/credentials_service_v2.php is returning a NetworkError 401: Unauthorized. I know this behavior is defined in the API; when an invalid user/pass combo gets submitted then the server should return a 401. What I'm a little confused about is where exactly the error is coming from. The API says that the accompanying text should be:
+
+<results>
+      <valid>no</valid>
+      <error>Invalid login, username not known or password not matched</error>
+</results>
+
+However, according to Firebug, what I'm getting is:
+
+<results><valid>no</valid><error>You must supply a valid username and password</error></results><html>
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<!-- For the legacy reason, the following are kept -->
+<form action="/webservices/credentials_service_v2.php" method="post">
+username:<br />
+<input name="username" type="text">
+<br />
+password:<br />
+<input name="password" type="password">
+<input type="submit" name="submit" value="submit">
+</form>
+</body>
+</html>
+
+Is there any chance that the API is incorrect or outdated? If not, I'm stumped as to what is generating that specific error message.
+******************************************************************
+
+Maybe it’s because I haven’t attached the HTTP Basic Authentication Headers per the API? I’m not actually sure what that is exactly. Lulin actually says she thinks the behavior is correct, so maybe the error message just isn’t as it’s specified in the API.
+
+I think the form is probably not getting submitted correctly. When I log it to the console, the output is a garbage string as follows:
+{ '0': 
+   { '0': { jQuery182028049067483628265: 71 },
+     '1': { jQuery182028049067483628265: 77 },
+     '2': { jQuery182028049067483628265: 55 },
+     jQuery182028049067483628265: 92 },
+  context: 
+   { '0': { jQuery182028049067483628265: 71 },
+     '1': { jQuery182028049067483628265: 77 },
+     '2': { jQuery182028049067483628265: 55 },
+     jQuery182028049067483628265: 92 },
+  length: 1 }
+
+When serialized, it looks like this: username=sesartest%40gmail.com&password=registersamples
+
+The API specifies the info needs to be in the format:
+username={yourusername}
+password={yourpassword}
+
+4/21 Woohoo! Got a 200 OK response from the server. It still doesn’t load the next page properly, but this is a good step. As it turns out, the format should actually be as specified in the curl command: username=username&password=password
+
+5/1 Didn't update from work on Friday. Now was able to get the XML response correctly, and parse it to grab the <valid> tag. I didn't use jQuery's parseXML() function, which was Lulin's recommendation. That returns a formatted XML doc from a String -- instead I already had a formatted XML doc. The find() method grabs the valid tag, and then .text() grabs the actual value of it. Now I can just run a little conditional to specify the correct behavior.

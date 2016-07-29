@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SESAR Mobile Home - Samples</title>
+    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.1.1.css" />
+    <link rel="stylesheet" href="css/validation.css" />
+    <link rel="stylesheet" href="css/themes/default/site.css" />
+    <script src="js/jquery-1.8.2.min.js"></script>
+    <script src="js/jquery.mobile-1.1.1.min.js"></script>
+    <script src="js/jquery.validate.min.js"></script>
+    <script src="js/jquery.json-2.3.min.js"></script>
+    <script src="js/site.js"></script>
+    <script>
+        $(function () {
+
+            function samplesRefresh() {
+                //  Populate samples 
+                var samplesList = $('#samplesList');
+                var samples = localStorage.getObj('samples');
+
+                samplesList.empty();
+                for (var sample in samples) {
+                    samplesList.append('<li><a href="Sample.html?id=' + sample + '" rel="external">' + samples[sample].Time + ' : ' + samples[sample].name + '</a></li>');
+                }
+                samplesList.listview('refresh');
+            }
+
+            function samplesClean() {
+                //  Populate samples 
+                var samplesList = $('#samplesList');
+                var samples = localStorage.getObj('samples');
+                localStorage.setObj('samples', null);
+
+                samplesRefresh();
+            }
+
+            samplesRefresh();
+
+            $(document).on('click', '.samples-refresh', function (e) {
+                e.preventDefault();
+                samplesRefresh();
+            });
+
+            $(document).on('click', '.samples-clean', function (e) {
+                e.preventDefault();
+                samplesClean();
+            });
+        });
+    </script>
+</head>
+<body>
+    <div data-role="page" data-theme="a">
+        <div data-role="header" data-position="fixed">
+            <a href="#" data-icon="arrow-l" data-rel="back">Back</a>
+            <h3>Samples</h3>
+        </div>
+        <ul id="samplesList" data-role="listview">
+        </ul>
+        <div data-role="footer" data-position="fixed">
+            <a href="#" class="samples-clean" data-role="button" data-icon="delete">Clear</a>
+            <a href="#" class="samples-refresh ui-btn-right" data-role="button" data-icon="refresh">Refresh</a>
+        </div>
+    </div>
+</body>
+</html>
